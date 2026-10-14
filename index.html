@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Saint Eyewear - Month-End Report</title>
+<style>
+  :root{--navy:#1f3a5f;--ink:#1a1a1a;--muted:#5a5a5a;--line:#dde1e6;--panel:#f2f5f8;--bg:#fff;--good:#2e9e5b;--bad:#c0392b;--warn:#b7791f}
+  @media (prefers-color-scheme:dark){:root{--navy:#9db8e0;--ink:#eceff3;--muted:#a3acb8;--line:#2d3540;--panel:#1a2029;--bg:#11151b;--good:#4ec283;--bad:#ee7a6d;--warn:#e0a84a}}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+  main{max-width:860px;margin:0 auto;padding:32px 16px 80px}
+  h1{font-size:24px;color:var(--navy);margin:0 0 4px}
+  h2{font-size:17px;color:var(--navy);margin:34px 0 6px;padding-top:14px;border-top:1px solid var(--line)}
+  h2 .n{display:inline-block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:var(--navy);color:var(--bg);font-size:14px;margin-right:8px}
+  h3{font-size:14px;color:var(--navy);margin:18px 0 6px}
+  .muted{color:var(--muted);font-size:13px} p{margin:6px 0}
+  #drop{border:2px dashed var(--line);border-radius:12px;padding:22px 16px;text-align:center;background:var(--panel);margin:12px 0}
+  #drop.over{border-color:var(--navy)} #drop label{cursor:pointer;color:var(--navy);font-weight:600;text-decoration:underline}
+  .inputs{border-collapse:collapse;width:100%;font-size:14px} .inputs td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+  .inputs .st{width:26px;font-size:18px} .ok{color:var(--good)} .no{color:var(--muted)}
+  button{font:inherit;font-weight:600;cursor:pointer;border-radius:8px;border:1px solid var(--navy);background:var(--navy);color:#fff;padding:10px 20px}
+  @media(prefers-color-scheme:dark){button{color:#11151b}} button:disabled{opacity:.45;cursor:not-allowed}
+  button.ghost{background:transparent;color:var(--navy)}
+  .banner{border:1px solid var(--line);border-left:5px solid var(--good);background:var(--panel);border-radius:8px;padding:12px 14px;margin:12px 0}
+  .banner.bad{border-left-color:var(--bad)} .banner.warn{border-left-color:var(--warn)} .banner b{display:block}
+  .dl a{display:inline-block;margin:0 8px 8px 0;padding:8px 14px;border:1px solid var(--navy);border-radius:8px;color:var(--navy);text-decoration:none;font-weight:600}
+  table.t{border-collapse:collapse;width:100%;font-size:13px} .t th,.t td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} .t td.n,.t th.n{text-align:right}
+  .t .pass{color:var(--good);font-weight:600} .t .fail{color:var(--bad);font-weight:600} .t .warn{color:var(--warn);font-weight:600}
+  .two{display:grid;gap:16px;grid-template-columns:1fr 1fr} .three{display:grid;gap:16px;grid-template-columns:repeat(3,1fr)} @media(max-width:700px){.two,.three{grid-template-columns:1fr}}
+  textarea{width:100%;height:240px;font:13px/1.4 ui-monospace,monospace;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px}
+  details{margin-top:10px} summary{cursor:pointer;color:var(--navy);font-weight:600}
+  input[type=url]{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);margin:4px 0 10px}
+  ul.chk{list-style:none;padding:0;margin:6px 0} ul.chk li{padding:4px 0} ul.chk input{margin-right:8px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Saint Eyewear - Month-End Report</h1>
+  <p class="muted">Runs in your browser; nothing is uploaded.</p>
+
+  <h2><span class="n">1</span>Inputs</h2>
+  <div id="drop">
+    Drop the files here, or <label>choose files<input id="files" type="file" accept=".xlsx,.docx" multiple hidden></label>
+  </div>
+  <div id="problems"></div>
+  <table class="inputs" id="inputs"></table>
+  <div id="missing"></div>
+  <details>
+    <summary>Optional: calendar YTD and links</summary>
+    <p class="muted">P&amp;L for 1 Jan to month end (<span id="ytdName">none</span>)</p>
+    <input id="ytd" type="file" accept=".xlsx">
+    <span class="muted">Daily Reporting Sheet link</span><input type="url" id="drsLink" placeholder="https://...">
+    <span class="muted">Deep View link</span><input type="url" id="deepLink" placeholder="https://...">
+    <span class="muted">Quick View link</span><input type="url" id="quickLink" placeholder="https://...">
+  </details>
+
+  <h2><span class="n">2</span>Tie-out</h2>
+  <p><button id="gate" disabled>Run tie-out</button></p>
+  <div id="gateOut"></div>
+
+  <h2><span class="n">3</span>Build</h2>
+  <p><button id="go" disabled>Build report</button></p>
+  <div id="buildOut"></div>
+
+  <div id="after" hidden>
+    <h2><span class="n">4</span>Review</h2>
+    <div id="reviewOut"></div>
+    <h2><span class="n">5</span>Download</h2>
+    <div id="deliverOut"></div>
+  </div>
+</main>
+<script src="lib/exceljs.min.js"></script>
+<script src="lib/jszip.min.js"></script>
+<script src="app.js"></script>
+<script>
+  setTimeout(function () {
+    if (window.__saintStarted) return;
+    var d = document.createElement("div"); d.className = "banner bad";
+    d.innerHTML = "<b>The app did not start</b>Check that the whole folder was uploaded (app.js and the lib folder next to index.html) and that your browser is up to date. Press F12 and open Console for the technical message.";
+    document.querySelector("main").prepend(d);
+  }, 1500);
+</script>
+</body>
+</html>
