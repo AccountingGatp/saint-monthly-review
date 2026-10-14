@@ -186,7 +186,7 @@ export function callpoints(monthName, prevName, res, ctx, pl, sec, tot, extra) {
     lines.push(`${n}. ACCRUAL WITHOUT P&L ACCOUNT: ` + res.orphan_accruals.join("; ") + " has a balance but there is no matching 'Social Media Ads - ...' P&L account. Where was the cost booked?"); n++;
   }
   const cp = pl.acct("COGS_Processing fee", k0);
-  if (Math.abs(cp) > 0.5) {
+  if (Math.abs(cp) > 0.5 && res.new_pl.some((x) => x.account === "COGS_Processing fee")) {
     lines.push(`${n}. 'COGS_Processing fee' is a new Cost of Sales account (${A(cp)}). DRS processing fee for the month is ${A(extra.drs_processing)}. Confirm what it is and why it is in Cost of Sales.`); n++;
   }
   lines.push(`${n}. COMMBANK USD is a manual account: reconcile to the bank statement (none supplied). Balance ${A(cu0)} (was ${A(cu1)}).`); n++;
@@ -196,7 +196,6 @@ export function callpoints(monthName, prevName, res, ctx, pl, sec, tot, extra) {
   if (ap < 0) { lines.push(`${n}. Accounts Payable is a debit balance of ${A(ap)} - check for overpaid or unapplied supplier payments.`); n++; }
   const warns = res.checks.filter((c) => c.status === "WARN" && !c.name.includes("Productwise"));
   if (warns.length) { lines.push(`${n}. DRS vs XERO differences above tolerance: ` + warns.map((c) => `${c.name} ${c.diff >= 0 ? "+" : "-"}${commas(c.diff, 2)}`).join("; ") + "."); n++; }
-  lines.push(`${n}. DRS workbook hygiene: Ratio Calculation, Journal Entries and Difference COGS tabs still hold old figures/November 2025 dates (not used); 'Net Profit (After GST)' row has #REF! in cell B45.`); n++;
   lines.push(`${n}. No General Ledger Detail was supplied. It is not needed for the month-end report, only for the expense pack.`); n++;
   return lines.join("\n") + "\n";
 }
